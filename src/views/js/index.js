@@ -1,26 +1,23 @@
+
 const socket = io()
 
 function checkSocketStatus() {
     console.log('Estado del Socket: ', socket.connected)
 }
-socket.on('connect', () => {
-    console.log('El socket se ha conectado', socket.id)
+socket.on('welcome', (data) => {
+    console.log('message', data)
+
+    // hmtl element id 
+    text.textContent = data
     checkSocketStatus()
 })
 
-socket.on('connect_error', () => {
-    console.log('No pude conectarme')
-})
+const emitToServer = document.querySelector('#emit-to-server')
 
-socket.on('disconnect', () => {
-    console.log('El socket se ha desconectado', socket.id)
+emitToServer.addEventListener('click', () => {
+    socket.emit('server', "Hello server")
+})
+socket.on('everyone', (data) => {
+    console.log(data)
     checkSocketStatus()
-})
-
-socket.io.on('reconnect_attempt', () => {
-    console.log('Se esta intentando reconectar')
-})
-
-socket.io.on('reconnect', () => {
-    console.log('Se ha reconectado')
 })

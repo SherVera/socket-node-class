@@ -16,16 +16,13 @@ app.get('/', (req, res) => {
 
 
 io.on('connection', socket => {
-    // console.log('Clientes conectados: ', io.engine.clientsCount)
-    // console.log('ID del socket conectado: ', socket.id)
-
-    // socket.on('disconnect', () => {
-    //     console.log('Socket desconectado:', socket.id)
-    // })
-
-    socket.conn.once('upgrade', () => {
-        console.log('Hemos pasado de HTTP Long Polling a Websocket, ', socket.conn.transport.name)
+    socket.emit('welcome', 'Bienvenido al servidor')
+    socket.on('server', data => {
+        console.log(data)
     })
+
+    // Broadcast
+    io.emit('everyone', socket.id + ' se ha conectado')
 })
 
 httpServer.listen(3000)
