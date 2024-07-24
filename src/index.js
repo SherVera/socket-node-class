@@ -14,18 +14,44 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + '/views/index.html')
 })
 
+const socketsOnline = []
 
 io.on('connection', socket => {
-    // console.log('Clientes conectados: ', io.engine.clientsCount)
-    // console.log('ID del socket conectado: ', socket.id)
+    socketsOnline.push(socket.id)
+    io.emit('welcome', 'Welcome to the server')
 
-    // socket.on('disconnect', () => {
-    //     console.log('Socket desconectado:', socket.id)
+    socket.on('server', data => {
+        console.log(data)
+    })
+
+    io.emit('everyone', socket.id + ' Connected')
+
+    socket.on('last', message => {
+        const lastSocket = socketsOnline[socketsOnline.length - 1]
+
+        io.to(lastSocket).emit('hello', message)
+    })
+
+    // on, once and off
+
+    // Listen to an event wherever it is emitted
+    // socket.on('on', () => {
+    //     console.log('Listening to event')
     // })
 
-    socket.conn.once('upgrade', () => {
-        console.log('Hemos pasado de HTTP Long Polling a Websocket, ', socket.conn.transport.name)
-    })
+    socket.emit('on', 'Listening to event')
+    socket.emit('on', 'Listening to event')
+
+    // Listen to an event only once
+    socket.emit('once', 'Listening to event once')
+    socket.emit('once', 'Listening to event once')
+
+    socket.emit('off', 'Listening to event off')
+
+    setTimeout(() => {
+        socket.emit('off', 'Listening to event off')
+    }, 3000)
+    
 })
 
 httpServer.listen(3000)
